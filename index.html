@@ -36,9 +36,8 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-pointer-events:none;
+pointer-events:auto;
 }
-
 .arc{
 width:280px;
 height:280px;
@@ -168,6 +167,7 @@ const API_URL =
 
 let recognition;
 let listening = false;
+let speaking = false;
 
 const circle =
 document.getElementById("jarvisCircle");
@@ -260,9 +260,16 @@ await sendVoiceMessage(text);
 recognition.onend =
 function(){
 
-if(listening){
+if(
+listening &&
+!speaking
+){
+
+try{
 
 recognition.start();
+
+}catch(e){}
 
 }
 
@@ -293,7 +300,6 @@ response.status
 );
 
 }
-
 const data =
 await response.json();
 
@@ -304,11 +310,23 @@ data.reply ||
 statusText.innerText =
 "RESPONDENDO...";
 
+speaking = true;
+
 if(recognition){
+
+try{
+
 recognition.stop();
+
+}catch(e){}
+
 }
 
+setTimeout(()=>{
+
 speak(resposta);
+
+},200);
 
 }catch(error){
 
@@ -366,6 +384,8 @@ voice;
 utterance.onstart =
 function(){
 
+speaking = true;
+
 statusText.innerText =
 "RESPONDENDO...";
 
@@ -374,16 +394,42 @@ statusText.innerText =
 utterance.onend =
 function(){
 
+speaking = false;
+
 statusText.innerText =
 "OUVINDO...";
 
 if(recognition){
 
+try{
+
 recognition.start();
+
+}catch(e){
+
+console.log(e);
+
+}
 
 }
 
 };
+
+utterance.onerror =
+function(error){
+
+console.error(
+"Erro na voz:",
+error
+);
+
+speaking = false;
+
+statusText.innerText =
+"ERRO DE ÁUDIO";
+
+};
+
 speechSynthesis.speak(
 utterance
 );
@@ -391,5 +437,6 @@ utterance
 }
 
 </script>
+
 </body>
 </html>
