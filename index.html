@@ -222,7 +222,7 @@ recognition.lang = "pt-BR";
 
 recognition.continuous = true;
 
-recognition.interimResults = false;
+recognition.interimResults = true;
 
 recognition.start();
 
@@ -238,10 +238,15 @@ statusText.innerText =
 recognition.onresult =
 async function(event){
 
-const text =
+const result =
 event.results[
 event.results.length - 1
-][0].transcript;
+];
+
+if(!result.isFinal) return;
+
+const text =
+result[0].transcript;
 
 console.log(text);
 
@@ -299,6 +304,10 @@ data.reply ||
 statusText.innerText =
 "RESPONDENDO...";
 
+if(recognition){
+recognition.stop();
+}
+
 speak(resposta);
 
 }catch(error){
@@ -329,15 +338,20 @@ utterance.lang =
 "pt-BR";
 
 utterance.rate =
-0.95;
+1.12;
 
 utterance.pitch =
-0.8;
+0.95;
 
 const voices =
 speechSynthesis.getVoices();
 
 const voice =
+voices.find(v =>
+v.name.includes("Google")
+&& v.lang.includes("pt")
+)
+||
 voices.find(v =>
 v.lang.includes("pt")
 );
@@ -363,8 +377,13 @@ function(){
 statusText.innerText =
 "OUVINDO...";
 
-};
+if(recognition){
 
+recognition.start();
+
+}
+
+};
 speechSynthesis.speak(
 utterance
 );
