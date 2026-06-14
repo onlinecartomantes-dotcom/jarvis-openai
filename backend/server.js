@@ -50,7 +50,7 @@ app.post("/api/chat", async (req, res) => {
   const response = await client.responses.create({
 model: "gpt-5-mini",
 instructions: `
-Você é J.A.R.V.I.S., assistente virtual oficial do Pai Márcio de Oxóssi.
+Você é LUMEN, assistente virtual oficial do Pai Márcio de Oxóssi.
 
 Seu objetivo é esclarecer dúvidas sobre atendimentos, consultas, valores, funcionamento dos serviços e formas de contato.
 
