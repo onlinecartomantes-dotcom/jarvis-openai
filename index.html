@@ -405,7 +405,14 @@ await response.json();
 const resposta =
 data.reply ||
 "Não consegui responder.";
+if(
+resposta.toLowerCase().includes("whatsapp") ||
+resposta.includes("85 98696-6786")
+){
 
+mostrarWhatsapp();
+
+}
 speak(resposta);
 
 }catch(error){
@@ -534,8 +541,52 @@ utterance
 );
 
 }
+function mostrarWhatsapp(){
 
+const box =
+document.getElementById(
+"whatsappBox"
+);
+
+box.style.display = "block";
+
+}
 </script>
+<div
+id="whatsappBox"
+style="
+display:none;
+position:fixed;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+z-index:9999;
+">
 
+<a
+href="https://wa.me/5585986966786"
+target="_blank"
+style="
+display:flex;
+align-items:center;
+gap:10px;
+background:#25D366;
+color:white;
+padding:14px 20px;
+border-radius:40px;
+text-decoration:none;
+font-weight:bold;
+box-shadow:0 0 20px rgba(37,211,102,.5);
+">
+
+<img
+src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+width="30">
+
+Falar no WhatsApp
+
+</a>
+
+</div>
 </body>
 </html>
