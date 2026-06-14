@@ -61,56 +61,20 @@ border-radius:50%;
 from{transform:rotate(0deg);}
 to{transform:rotate(360deg);}
 }
-
 .title{
 margin-top:20px;
 font-size:42px;
 letter-spacing:8px;
 }
 
-.chat{
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-width:90%;
-max-width:900px;
-z-index:999;
-}
-
-#messages{
-height:250px;
-overflow:auto;
-padding:10px;
-margin-bottom:10px;
-border:1px solid cyan;
-background:#021a26;
-}
-
-.message{
-margin-bottom:10px;
-}
-
-input{
-width:80%;
-padding:12px;
-background:#021a26;
-color:white;
-border:1px solid cyan;
-outline:none;
-}
-
-button{
-width:18%;
-padding:12px;
-background:cyan;
-border:none;
-cursor:pointer;
-font-weight:bold;
-}
-
-button:hover{
-opacity:.9;
+.arc{
+width:min(70vw,320px);
+height:min(70vw,320px);
+border:4px solid cyan;
+border-radius:50%;
+position:relative;
+animation:spin 12s linear infinite;
+box-shadow:0 0 30px cyan;
 }
 
 .listening{
@@ -142,6 +106,41 @@ box-shadow:
 
 }
 
+#status{
+margin-top:20px;
+font-size:18px;
+color:#7fffff;
+text-align:center;
+letter-spacing:2px;
+padding:0 20px;
+max-width:90vw;
+}
+
+@media (max-width:768px){
+
+.title{
+font-size:28px;
+letter-spacing:4px;
+}
+
+#status{
+font-size:15px;
+}
+
+}
+
+@media (max-width:480px){
+
+.title{
+font-size:22px;
+letter-spacing:3px;
+}
+
+#status{
+font-size:14px;
+}
+
+}
 </style>
 </head>
 
@@ -150,134 +149,54 @@ box-shadow:
 <div class="bg"></div>
 
 <div class="center">
+
 <div class="arc" id="jarvisCircle"></div>
-<div class="title">J.A.R.V.I.S.</div>
-</div>
-<div class="chat">
 
-<div id="messages"></div>
-
-<input
-id="prompt"
-placeholder="Digite um comando..."
-onkeydown="if(event.key==='Enter')sendMessage()">
-
-<button onclick="sendMessage()">
-Enviar
-</button>
-
-<button onclick="toggleVoice()">
-🎤 Ouvir
-</button>
+<div class="title">
+J.A.R.V.I.S.
 </div>
 
+<div id="status">
+TOQUE EM QUALQUER LUGAR PARA INICIAR
+</div>
+
+</div>
 <script>
 
 const API_URL =
 "https://jarvis-openai-du7j.onrender.com/api/chat";
 
-async function sendMessage(){
-
-const input =
-document.getElementById("prompt");
-
-const text =
-input.value.trim();
-
-if(!text) return;
-
-addMessage("Você", text);
-
-input.value = "";
-
-try{
-
-const response =
-await fetch(API_URL,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-message:text
-})
-});
-
-if(!response.ok){
-
-throw new Error(
-"Erro HTTP: " + response.status
-);
-
-}
-
-const data =
-await response.json();
-
-const resposta =
-data.reply || "Sem resposta.";
-
-addMessage(
-"J.A.R.V.I.S.",
-resposta
-);
-
-speak(resposta);
-
-}catch(error){
-
-console.error(error);
-
-addMessage(
-"Sistema",
-"Erro de conexão com o servidor."
-);
-
-}
-
-}
-
-function addMessage(author,text){
-
-const box =
-document.getElementById("messages");
-
-box.innerHTML += `
-<div class="message">
-<b>${author}:</b> ${text}
-</div>
-`;
-
-box.scrollTop =
-box.scrollHeight;
-
-}
-
 let recognition;
 let listening = false;
 
 const circle =
-document.getElementById(
-"jarvisCircle"
+document.getElementById("jarvisCircle");
+
+const statusText =
+document.getElementById("status");
+
+document.body.addEventListener("click",()=>{
+
+if(listening) return;
+
+startJarvis();
+
+});
+
+async function startJarvis(){
+
+statusText.innerText =
+"INICIANDO...";
+
+speak(
+"Olá. Tudo bem? Em que posso ajudar hoje?"
 );
 
-function toggleVoice(){
-
-if(listening){
-
-recognition.stop();
-
-listening = false;
-
-circle.classList.remove(
-"listening"
-);
-
-return;
-
-}
+setTimeout(()=>{
 
 startVoice();
+
+},2500);
 
 }
 
@@ -289,9 +208,8 @@ window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
 
-alert(
-"Seu navegador não suporta voz."
-);
+statusText.innerText =
+"NAVEGADOR NÃO SUPORTA VOZ";
 
 return;
 
@@ -314,36 +232,23 @@ circle.classList.add(
 "listening"
 );
 
-recognition.onresult =
-function(event){
+statusText.innerText =
+"OUVINDO...";
 
-const result =
+recognition.onresult =
+async function(event){
+
+const text =
 event.results[
 event.results.length - 1
 ][0].transcript;
 
-const text =
-result.toLowerCase();
+console.log(text);
 
-if(text.includes("jarvis")){
+statusText.innerText =
+"PENSANDO...";
 
-const command =
-text.replace(
-"jarvis",
-""
-).trim();
-
-if(command){
-
-document
-.getElementById("prompt")
-.value = command;
-
-sendMessage();
-
-}
-
-}
+await sendVoiceMessage(text);
 
 };
 
@@ -360,6 +265,57 @@ recognition.start();
 
 }
 
+async function sendVoiceMessage(text){
+
+try{
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:text
+})
+});
+
+if(!response.ok){
+
+throw new Error(
+"Erro HTTP: " +
+response.status
+);
+
+}
+
+const data =
+await response.json();
+
+const resposta =
+data.reply ||
+"Sem resposta.";
+
+statusText.innerText =
+"RESPONDENDO...";
+
+speak(resposta);
+
+}catch(error){
+
+console.error(error);
+
+speak(
+"Desculpe. Estou com problemas de conexão."
+);
+
+statusText.innerText =
+"ERRO DE CONEXÃO";
+
+}
+
+}
+
 function speak(text){
 
 speechSynthesis.cancel();
@@ -369,11 +325,14 @@ new SpeechSynthesisUtterance(
 text
 );
 
-utterance.lang = "pt-BR";
+utterance.lang =
+"pt-BR";
 
-utterance.rate = 0.95;
+utterance.rate =
+0.95;
 
-utterance.pitch = 0.8;
+utterance.pitch =
+0.8;
 
 const voices =
 speechSynthesis.getVoices();
@@ -390,12 +349,28 @@ voice;
 
 }
 
+utterance.onstart =
+function(){
+
+statusText.innerText =
+"RESPONDENDO...";
+
+};
+
+utterance.onend =
+function(){
+
+statusText.innerText =
+"OUVINDO...";
+
+};
+
 speechSynthesis.speak(
 utterance
 );
 
 }
-</script>
 
+</script>
 </body>
 </html>
