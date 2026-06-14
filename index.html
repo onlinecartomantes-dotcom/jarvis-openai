@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S.</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#020b14;
+color:#00ffff;
+height:100vh;
+overflow:hidden;
+}
+
+.bg{
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at center,
+rgba(0,255,255,.15),
+transparent 40%);
+}
+
+.center{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.arc{
+width:280px;
+height:280px;
+border:4px solid cyan;
+border-radius:50%;
+position:relative;
+animation:spin 12s linear infinite;
+box-shadow:0 0 30px cyan;
+}
+
+.arc::before{
+content:"";
+position:absolute;
+inset:20px;
+border:2px dashed cyan;
+border-radius:50%;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.title{
+margin-top:20px;
+font-size:42px;
+letter-spacing:8px;
+}
+
+.chat{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+max-width:900px;
+}
+
+#messages{
+height:250px;
+overflow:auto;
+padding:10px;
+margin-bottom:10px;
+border:1px solid cyan;
+background:#021a26;
+}
+
+.message{
+margin-bottom:10px;
+}
+
+input{
+width:80%;
+padding:12px;
+background:#021a26;
+color:white;
+border:1px solid cyan;
+}
+
+button{
+width:18%;
+padding:12px;
+background:cyan;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="center">
+<div class="arc"></div>
+<div class="title">J.A.R.V.I.S.</div>
+</div>
+
+<div class="chat">
+
+<div id="messages"></div>
+
+<input
+id="prompt"
+placeholder="Digite um comando..."
+onkeydown="if(event.key==='Enter')sendMessage()">
+
+<button onclick="sendMessage()">
+Enviar
+</button>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://SEU-PROJETO.onrender.com/api/chat";
+
+async function sendMessage(){
+
+const input =
+document.getElementById("prompt");
+
+const text =
+input.value.trim();
+
+if(!text) return;
+
+addMessage("Você", text);
+
+input.value="";
+
+try{
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:text
+})
+});
+
+const data =
+await response.json();
+
+addMessage(
+"J.A.R.V.I.S.",
+data.reply || "Sem resposta."
+);
+
+}catch(error){
+
+addMessage(
+"Sistema",
+"Erro de conexão."
+);
+
+console.error(error);
+
+}
+}
+
+function addMessage(author,text){
+
+const box =
+document.getElementById("messages");
+
+box.innerHTML += `
+<div class="message">
+<b>${author}:</b> ${text}
+</div>
+`;
+
+box.scrollTop =
+box.scrollHeight;
+
+}
+</script>
+
+</body>
+</html>
