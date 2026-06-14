@@ -230,7 +230,6 @@ startVoice();
 }
 
 }
-
 async function startJarvis(){
 
 listening = true;
@@ -284,6 +283,7 @@ statusText.innerText =
 "PAUSADO";
 
 }
+
 function startVoice(){
 
 if(recognition){
@@ -345,7 +345,6 @@ statusText.innerText =
 await sendVoiceMessage(text);
 
 };
-
 recognition.onend =
 function(){
 
@@ -405,14 +404,23 @@ await response.json();
 const resposta =
 data.reply ||
 "Não consegui responder.";
+
 if(
 resposta.toLowerCase().includes("whatsapp") ||
-resposta.includes("85 98696-6786")
+resposta.includes("85") ||
+resposta.includes("98696")
 ){
 
 mostrarWhatsapp();
 
+speak(
+"Clique no botão do WhatsApp exibido na tela para continuar o atendimento."
+);
+
+return;
+
 }
+
 speak(resposta);
 
 }catch(error){
@@ -476,6 +484,7 @@ voice;
 
 utterance.onstart =
 function(){
+
 if(recognition){
 
 try{
@@ -541,6 +550,7 @@ utterance
 );
 
 }
+
 function mostrarWhatsapp(){
 
 const box =
@@ -548,7 +558,12 @@ document.getElementById(
 "whatsappBox"
 );
 
-box.style.display = "block";
+if(box){
+
+box.style.display =
+"block";
+
+}
 
 }
 </script>
