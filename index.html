@@ -6,6 +6,7 @@
 <title>J.A.R.V.I.S.</title>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -35,6 +36,7 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
+pointer-events:none;
 }
 
 .arc{
@@ -73,6 +75,7 @@ left:50%;
 transform:translateX(-50%);
 width:90%;
 max-width:900px;
+z-index:999;
 }
 
 #messages{
@@ -94,6 +97,7 @@ padding:12px;
 background:#021a26;
 color:white;
 border:1px solid cyan;
+outline:none;
 }
 
 button{
@@ -104,6 +108,11 @@ border:none;
 cursor:pointer;
 font-weight:bold;
 }
+
+button:hover{
+opacity:.9;
+}
+
 </style>
 </head>
 
@@ -134,7 +143,7 @@ Enviar
 <script>
 
 const API_URL =
-"https://jarvis-openai-du7j.onrender.com";
+"https://jarvis-openai-du7j.onrender.com/api/chat";
 
 async function sendMessage(){
 
@@ -148,7 +157,7 @@ if(!text) return;
 
 addMessage("Você", text);
 
-input.value="";
+input.value = "";
 
 try{
 
@@ -163,6 +172,14 @@ message:text
 })
 });
 
+if(!response.ok){
+
+throw new Error(
+"Erro HTTP: " + response.status
+);
+
+}
+
 const data =
 await response.json();
 
@@ -173,14 +190,15 @@ data.reply || "Sem resposta."
 
 }catch(error){
 
-addMessage(
-"Sistema",
-"Erro de conexão."
-);
-
 console.error(error);
 
+addMessage(
+"Sistema",
+"Erro de conexão com o servidor."
+);
+
 }
+
 }
 
 function addMessage(author,text){
@@ -198,6 +216,7 @@ box.scrollTop =
 box.scrollHeight;
 
 }
+
 </script>
 
 </body>
