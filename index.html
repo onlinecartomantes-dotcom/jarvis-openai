@@ -140,6 +140,7 @@ font-size:14px;
 }
 
 }
+
 </style>
 </head>
 
@@ -149,16 +150,22 @@ font-size:14px;
 
 <div class="center">
 
-<div class="arc" id="jarvisCircle"></div>
+<div
+class="arc"
+id="jarvisCircle"
+onclick="toggleAssistant()">
+</div>
 
 <div class="title">
 LÚMEN
 </div>
+
 <div id="status">
-TOQUE EM QUALQUER LUGAR PARA INICIAR
+TOQUE NO CÍRCULO PARA INICIAR
 </div>
 
 </div>
+
 <script>
 
 const API_URL =
@@ -167,33 +174,69 @@ const API_URL =
 let recognition;
 let listening = false;
 let speaking = false;
+let initialized = false;
 
 const circle =
-document.getElementById("jarvisCircle");
+document.getElementById(
+"jarvisCircle"
+);
 
 const statusText =
-document.getElementById("status");
+document.getElementById(
+"status"
+);
 
-document.body.addEventListener("click",()=>{
+function toggleAssistant(){
 
-if(!listening){
+if(!initialized){
+
+initialized = true;
 
 startJarvis();
 
-}else{
-
-pauseJarvis();
+return;
 
 }
 
-});
+if(listening){
+
+pauseJarvis();
+
+}else{
+
+listening = true;
+
+statusText.innerText =
+"OUVINDO...";
+
+circle.classList.add(
+"listening"
+);
+
+if(recognition){
+
+try{
+
+recognition.start();
+
+}catch(e){}
+
+}else{
+
+startVoice();
+
+}
+
+}
+
+}
 
 async function startJarvis(){
 
 listening = true;
 
 statusText.innerText =
-"LUMEN ATIVO";
+"LÚMEN ATIVO";
 
 circle.classList.add(
 "listening"
@@ -207,7 +250,7 @@ setTimeout(()=>{
 
 startVoice();
 
-},2500);
+},2000);
 
 }
 
@@ -241,9 +284,11 @@ statusText.innerText =
 "PAUSADO";
 
 }
-
 function startVoice(){
 
+if(recognition){
+return;
+}
 const SpeechRecognition =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
@@ -262,7 +307,7 @@ new SpeechRecognition();
 
 recognition.lang = "pt-BR";
 
-recognition.continuous = true;
+recognition.continuous = false;
 
 recognition.interimResults = true;
 
@@ -280,6 +325,8 @@ statusText.innerText =
 recognition.onresult =
 async function(event){
 
+if(speaking) return;
+
 const result =
 event.results[
 event.results.length - 1
@@ -288,9 +335,9 @@ event.results.length - 1
 if(!result.isFinal) return;
 
 const text =
-result[0].transcript;
+result[0].transcript.trim();
 
-console.log(text);
+if(!text) return;
 
 statusText.innerText =
 "PENSANDO...";
@@ -323,6 +370,16 @@ async function sendVoiceMessage(text){
 
 try{
 
+if(recognition){
+
+try{
+
+recognition.stop();
+
+}catch(e){}
+
+}
+
 const response =
 await fetch(API_URL,{
 method:"POST",
@@ -337,8 +394,7 @@ message:text
 if(!response.ok){
 
 throw new Error(
-"Erro HTTP: " +
-response.status
+"HTTP " + response.status
 );
 
 }
@@ -348,42 +404,26 @@ await response.json();
 
 const resposta =
 data.reply ||
-"Sem resposta.";
+"Não consegui responder.";
+
+speak(resposta);
+
+}catch(error){
+
+console.error(error);
 
 statusText.innerText =
-"RESPONDENDO...";
+"OUVINDO...";
 
-speaking = true;
-
-if(recognition){
+if(listening){
 
 try{
 
-recognition.stop();
+recognition.start();
 
 }catch(e){}
 
 }
-
-setTimeout(()=>{
-
-speak(resposta);
-
-},200);
-
-}catch(error){
-
-console.error(
-"ERRO:",
-error
-);
-
-statusText.innerText =
-"ERRO DE CONEXÃO";
-
-speak(
-"Desculpe. Estou com problemas de conexão."
-);
 
 }
 
@@ -402,10 +442,10 @@ utterance.lang =
 "pt-BR";
 
 utterance.rate =
-1.12;
+1.05;
 
 utterance.pitch =
-0.95;
+1.0;
 
 const voices =
 speechSynthesis.getVoices();
@@ -429,6 +469,15 @@ voice;
 
 utterance.onstart =
 function(){
+if(recognition){
+
+try{
+
+recognition.stop();
+
+}catch(e){}
+
+}
 
 speaking = true;
 
@@ -447,7 +496,9 @@ if(listening){
 statusText.innerText =
 "OUVINDO...";
 
-if(recognition){
+setTimeout(()=>{
+
+if(listening){
 
 try{
 
@@ -456,6 +507,8 @@ recognition.start();
 }catch(e){}
 
 }
+
+},500);
 
 }
 
@@ -472,7 +525,7 @@ error
 speaking = false;
 
 statusText.innerText =
-"ERRO DE ÁUDIO";
+"OUVINDO...";
 
 };
 
