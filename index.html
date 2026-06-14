@@ -152,9 +152,8 @@ font-size:14px;
 <div class="arc" id="jarvisCircle"></div>
 
 <div class="title">
-J.A.R.V.I.S.
+LÚMEN
 </div>
-
 <div id="status">
 TOQUE EM QUALQUER LUGAR PARA INICIAR
 </div>
@@ -177,19 +176,31 @@ document.getElementById("status");
 
 document.body.addEventListener("click",()=>{
 
-if(listening) return;
+if(!listening){
 
 startJarvis();
+
+}else{
+
+pauseJarvis();
+
+}
 
 });
 
 async function startJarvis(){
 
+listening = true;
+
 statusText.innerText =
-"INICIANDO...";
+"LUMEN ATIVO";
+
+circle.classList.add(
+"listening"
+);
 
 speak(
-"Olá. Tudo bem? Em que posso ajudar hoje?"
+"Olá. Eu sou Lúmen. Em que posso ajudar?"
 );
 
 setTimeout(()=>{
@@ -197,6 +208,37 @@ setTimeout(()=>{
 startVoice();
 
 },2500);
+
+}
+
+function pauseJarvis(){
+
+listening = false;
+
+speaking = false;
+
+try{
+
+speechSynthesis.cancel();
+
+}catch(e){}
+
+try{
+
+if(recognition){
+
+recognition.stop();
+
+}
+
+}catch(e){}
+
+circle.classList.remove(
+"listening"
+);
+
+statusText.innerText =
+"PAUSADO";
 
 }
 
@@ -300,6 +342,7 @@ response.status
 );
 
 }
+
 const data =
 await response.json();
 
@@ -330,14 +373,17 @@ speak(resposta);
 
 }catch(error){
 
-console.error(error);
-
-speak(
-"Desculpe. Estou com problemas de conexão."
+console.error(
+"ERRO:",
+error
 );
 
 statusText.innerText =
 "ERRO DE CONEXÃO";
+
+speak(
+"Desculpe. Estou com problemas de conexão."
+);
 
 }
 
@@ -396,6 +442,8 @@ function(){
 
 speaking = false;
 
+if(listening){
+
 statusText.innerText =
 "OUVINDO...";
 
@@ -405,9 +453,7 @@ try{
 
 recognition.start();
 
-}catch(e){
-
-console.log(e);
+}catch(e){}
 
 }
 
