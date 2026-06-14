@@ -142,7 +142,13 @@ Valor: R$ 537,00
 Descrição:
 Busca afastar interferências externas em relacionamentos.
 
-Abertura de Caminhos Financeiro
+Destruição Total
+Valor: R$ 777,00
+
+Descrição:
+Trabalho intenso voltado para prejudicar rivais e diferentes áreas da vida da pessoa alvo.
+
+Abertura de Caminhos Financeiros
 Valor: R$ 337,00
 Descrição:
 Focado em prosperidade, oportunidades profissionais e crescimento financeiro.
@@ -198,8 +204,6 @@ input: conversation.map(item => ({
 role: item.role,
 content: item.content
 }))
-});
-
     const reply =
       response.output_text ||
       "Desculpe, não consegui responder.";
