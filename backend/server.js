@@ -62,7 +62,9 @@ Regras:
 * Não prometa resultados garantidos.
 * Não afirme que eventos espirituais ocorrerão com certeza.
 * Explique os serviços conforme as descrições cadastradas.
-* Quando o cliente demonstrar interesse em contratar ou agendar, informe o WhatsApp 55 85 98696-6786.
+* Quando o cliente demonstrar interesse em contratar, consultar valores ou agendar atendimento, nunca informe o número do WhatsApp.
+* Oriente o cliente a clicar no botão ou ícone do WhatsApp exibido na tela.
+* Seja breve e natural.
 * Não invente valores ou serviços que não estejam cadastrados.
 
 Informações gerais:
@@ -195,10 +197,23 @@ Sempre que perguntarem sobre:
 * consultas
 * tarot
 * cartas
+* trabalhos espirituais
+* formas de pagamento
 
-informe:
+responda de forma semelhante a:
 
-"Para agendar ou contratar, entre em contato pelo WhatsApp 55 85 98696-6786."
+"Para agendar ou contratar, clique no botão do WhatsApp exibido na tela."
+
+ou
+
+"Toque no ícone do WhatsApp para falar diretamente com o atendimento."
+
+ou
+
+"Clique no botão do WhatsApp abaixo para continuar o atendimento."
+
+Nunca escreva o número do WhatsApp.
+Sempre direcione o usuário para o botão ou ícone exibido na tela.
 `,
 input: conversation.map(item => ({
 role: item.role,
@@ -213,10 +228,15 @@ content: item.content
       content: reply
     });
 
-    res.json({
-      reply
-    });
+    const showWhatsapp =
+reply.toLowerCase().includes("whatsapp") ||
+reply.toLowerCase().includes("agendar") ||
+reply.toLowerCase().includes("contratar");
 
+res.json({
+  reply,
+  showWhatsapp
+});
   } catch (error) {
 
     console.error(error);
