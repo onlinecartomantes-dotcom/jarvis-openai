@@ -403,17 +403,21 @@ const data =
 await response.json();
 
 const resposta =
-data.reply ||
-"Não consegui responder.";
-if(
+data.reply || "Não consegui responder.";
+
+if (
 resposta.toLowerCase().includes("whatsapp") ||
-resposta.includes("clique no ícone do whatsapp")
+resposta.includes("85 98696-6786")
 ){
-
 mostrarWhatsapp();
-
 }
-speak(resposta);
+
+// Troca qualquer número de telefone por uma frase amigável
+const respostaFalada = resposta.replace(
+    /(\+?\d[\d\s()-]{7,}\d)/g,
+    "o link do WhatsApp está disponível na tela"
+);
+speak(respostaFalada);
 
 }catch(error){
 
