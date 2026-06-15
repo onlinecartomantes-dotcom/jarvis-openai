@@ -48,10 +48,13 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-text-align:center;
-pointer-events:auto;
-}
 
+display:flex;
+flex-direction:column;
+align-items:center;
+
+text-align:center;
+}
 .arc{
 width:min(75vw,340px);
 height:min(75vw,340px);
@@ -157,18 +160,23 @@ box-shadow:
 }
 
 }
-
 #status{
 margin-top:20px;
+width:100%;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+text-align:center;
+
 font-size:18px;
 color:#76ffff;
-text-align:center;
 letter-spacing:4px;
-padding:0 20px;
-max-width:90vw;
 
 text-shadow:
-0 0 10px cyan;
+0 0 10px cyan,
+0 0 20px cyan;
 }
 @media (max-width:768px){
 
@@ -217,7 +225,7 @@ LÚMEN
 </div>
 
 <div class="subtitle">
-Sua guia digital
+
 </div>
 
 <div id="status">
