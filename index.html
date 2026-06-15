@@ -55,24 +55,29 @@ align-items:center;
 
 text-align:center;
 }
-.arc{
-width:min(75vw,340px);
-height:min(75vw,340px);
 
-border-radius:50%;
+.arc{
+width:min(75vw,320px);
+height:min(75vw,320px);
+
 position:relative;
 cursor:pointer;
 
+border-radius:50%;
+overflow:hidden;
+
 background:
 radial-gradient(
-circle at 40% 30%,
-rgba(255,255,255,.45),
-transparent 25%
+circle at 35% 25%,
+rgba(255,255,255,.35),
+transparent 30%
 ),
-url("https://i.ibb.co/xK16178m/Chat-GPT-Image-14-06-2026-21-54-59.png");
+url("https://i.ibb.co/BHdM06dh/Chat-GPT-Image-14-06-2026-22-41-05-removebg-preview.png");
 
-background-size:cover;
+
+background-size:160%;
 background-position:center;
+background-repeat:no-repeat;
 
 box-shadow:
 0 0 20px #00ffff,
@@ -82,6 +87,7 @@ box-shadow:
 animation:
 floatOrb 6s ease-in-out infinite;
 }
+
 @keyframes spin{
 from{
 transform:rotate(0deg);
