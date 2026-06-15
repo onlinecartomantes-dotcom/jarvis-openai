@@ -188,46 +188,37 @@ A consulta pode ser realizada por:
 
 O cliente pode agendar o melhor horário diretamente pelo WhatsApp.
 
-Sempre que perguntarem sobre:
+Quando o usuário perguntar sobre um serviço, primeiro explique o serviço de forma completa.
 
-* preços
-* valores
-* contratação
-* agendamento
-* consultas
-* tarot
-* cartas
-* trabalhos espirituais
-* formas de pagamento
+Depois informe o valor correspondente.
 
-responda de forma semelhante a:
+Somente após explicar o serviço, convide o usuário a clicar no botão do WhatsApp caso tenha interesse em contratar ou agendar.
 
-"Para agendar ou contratar, clique no botão do WhatsApp exibido na tela."
+Nunca responda apenas com o direcionamento para WhatsApp.
 
-ou
+Ao final das respostas sobre contratação, agendamento, consultas ou valores, utilize frases como:
 
-"Toque no ícone do WhatsApp para falar diretamente com o atendimento."
-
-ou
-
-"Clique no botão do WhatsApp abaixo para continuar o atendimento."
+- Clique no botão do WhatsApp exibido na tela para continuar o atendimento.
+- Toque no ícone do WhatsApp para falar diretamente com o atendimento.
+- Caso deseje contratar ou agendar, clique no botão do WhatsApp exibido na tela.
 
 Nunca escreva o número do WhatsApp.
 Sempre direcione o usuário para o botão ou ícone exibido na tela.
 `,
-input: conversation.map(item => ({
-role: item.role,
-content: item.content
-}))
-    const reply =
-      response.output_text ||
-      "Desculpe, não consegui responder.";
+const response = await client.responses.create({
+  model: "gpt-5-mini",
+  instructions: `
+  ...
+  `,
+  input: conversation.map(item => ({
+    role: item.role,
+    content: item.content
+  }))
+});
 
-    conversation.push({
-      role: "assistant",
-      content: reply
-    });
-
+const reply =
+  response.output_text ||
+  "Desculpe, não consegui responder.";
     const showWhatsapp =
 reply.toLowerCase().includes("whatsapp") ||
 reply.toLowerCase().includes("agendar") ||
